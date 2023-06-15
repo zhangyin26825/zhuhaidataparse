@@ -11,6 +11,15 @@ export default defineComponent({
       },  
       //schoolData: SchoolData
     },
+    watch:{
+      schoolData(newValue,_oldValue){
+
+        (newValue as SchoolData).answer_papers.filter(i=>i.subject=='huaxue');
+        (newValue as SchoolData).answer_papers.filter(i=>i.subject=='wuli');
+        
+      }
+
+    }
  })
 
 </script>
@@ -55,21 +64,15 @@ export default defineComponent({
 </template>
 
 <style scoped>
-    @page {
-      size: A4 portrait; /*  */
-      margin: 3.7cm 2.6cm 3.5cm; /* 国家标准公文页边距 GB/T 9704-2012 */
-    }
-    @page { margin-top: 0; }
-
-    @page { margin-bottom: 0; }
-
-    @page { margin: 0; }
-    body{
+    /* body{
       margin: 25mm 25mm 25mm 25mm;
-    }
+    } */
     .contain{
+      /* margin: 25mm 20mm 25mm 20mm; */
       width: 100%;
       height:842px;
+      page-break-before: always;
+      page-break-after:always;
     }
     table,td{
       border:1px solid #000;
@@ -87,4 +90,41 @@ export default defineComponent({
       font-size: 20px;
       height: 100px;
     }
+    @media print{
+      @page {
+      size: A4 portrait; /*  */
+      /* 国家标准公文页边距 GB/T 9704-2012 */
+      /* margin: 3.7cm 2.6cm 3.5cm;  */
+      margin-top: 0;
+      margin-bottom: 0;
+      margin: 0; 
+    }
+    body{
+      /* margin: 25mm 25mm 25mm 25mm; */
+    }
+    .contain{
+      margin: 25mm 10mm 25mm 10mm;
+      width: 90%;
+      height:29cm;
+      page-break-before: always;
+      page-break-after:always;
+    }
+    table,td{
+      border:1px solid #000;
+      border-collapse: collapse;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      padding-left: 5px;
+    }
+    td{
+      height:80px;
+    }
+    th{
+      padding-top: 10px;
+      padding-bottom: 10px;
+      font-size: 20px;
+      height: 100px;
+    }
+
+   }
 </style>

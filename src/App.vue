@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Tabs } from 'ant-design-vue';
+import { Tabs,message } from 'ant-design-vue';
 import { invoke } from '@tauri-apps/api';
 import { open } from '@tauri-apps/api/dialog';
 import { SchoolData } from './dataType';
@@ -7,12 +7,11 @@ import schoolDataComponent from './components/schoolDataComponent.vue';
 export default {
   data() {
     return {
-      s:String,
       schoolDatas:[] as SchoolData[]
     }
   },
   components: {  
-    Tabs,  schoolDataComponent
+    Tabs,  schoolDataComponent,message
   },  
   methods: {
     async onCLick() {
@@ -23,8 +22,11 @@ export default {
       console.log(selected)
       invoke('parse_dir', { pathStr: selected })
       .then((response)=>{
-        this.schoolDatas = response as SchoolData[];
-        // console.log(JSON.stringify(response));
+        if ((response as []).length === 0) { 
+          message.error('当前选择的硬盘找不到答卷信息');
+        }else{
+          this.schoolDatas = response as SchoolData[];
+        }
       })
     },
     printHtml(){
@@ -32,6 +34,10 @@ export default {
     },
     clearData(){
       this.schoolDatas = [];
+      invoke('clear_data', {})
+      .then((response)=>{
+          console.log(" 接收 rust clear_data 返回 "+response)
+      })
     }
   }
 }
@@ -62,15 +68,7 @@ export default {
   margin-right: 8px;
   margin-bottom: 12px;
 }
-@media print{
-  .header_container{
-    display: none;
-  }
-  .ant-tabs-nav-wrap{
-    display: none;
-  }
 
-}
 </style>
 
 
