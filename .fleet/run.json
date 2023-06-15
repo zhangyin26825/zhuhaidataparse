@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "type": "command",
+            "name": "cargo",
+            "environment": {
+                "TEMP_DIR": "./src-tauri", 
+            },
+            "program": "D:\rust\.cargo\bin\cargo.exe",
+            "args": ["tauri", "dev"]
+        }
+    ]
+}
