@@ -1,9 +1,5 @@
 
-
-
-use std::borrow::BorrowMut;
 use std::fs;
-use std::collections::HashSet;
 use std::path::Path;
 use std::vec::Vec;
 use serde::{Deserialize, Serialize};
@@ -16,6 +12,7 @@ use std::fs::read_to_string;
 use std::hash::{Hash, Hasher}; 
 pub use super::school::SCHOOL_INFO_MAP;
 pub use super::school::Record;
+
 
 
 static mut CHECK_MD5: i32 = 0;
@@ -57,22 +54,35 @@ pub struct School {
     school_name: String,  
     wuli_count: i32,
     huaxue_count:i32,
-    answer_papers: HashSet<StudentPaper>,
+    answer_papers: Vec<StudentPaper>,
     error_dirs: Vec<String>
 }
 impl School{
     fn new(school_code:&str,record:& Record)->Self{
-        let set=HashSet::new();
+        let vec=vec![];
         let error_dirs=vec![];
         School{
             school_code:school_code.to_string(),
             school_name:record.school_name.clone(),
             wuli_count:record.wuli_count,
             huaxue_count:record.huaxue_count,
-            answer_papers:set,
+            answer_papers:vec,
             error_dirs:error_dirs
         }
     }
+
+    fn check_and_insert(&mut self,student_paper :StudentPaper){
+       
+        let  paper = self.answer_papers.iter_mut().find(|paper| paper.student_id == student_paper.student_id && paper.subject == student_paper.subject);
+    
+        if let Some(mut paper) = paper {
+            paper.error_messages.push("存在重复的试卷".to_string());
+            paper.status = false;
+        } else {
+            self.answer_papers.push(student_paper);
+        }
+    }
+
 }
 #[derive(Debug,Serialize)]
 struct StudentPaper {
@@ -109,7 +119,7 @@ fn parse_school_code_dir(path:&Path,school: &mut School ){
         let entry = entry.unwrap();  
         let path = entry.path();  
         if path.is_dir() {  
-            let subject = path.file_stem().unwrap().to_str().unwrap();
+            let subject = path.file_name().unwrap().to_str().unwrap();
             if subject.eq_ignore_ascii_case("wuli") || subject.eq_ignore_ascii_case("huaxue") {
                 parse_subject_dir(&path,school,&subject.to_lowercase());
             }else{
@@ -125,7 +135,7 @@ fn parse_subject_dir(path:&Path,school: &mut School,subject:&str){
         let entry = entry.unwrap();  
         let path = entry.path();  
         if path.is_dir() {  
-            let test_paper_num = path.file_stem().unwrap().to_str().unwrap();
+            let test_paper_num = path.file_name().unwrap().to_str().unwrap();
             if test_paper_num == "H_1001" || test_paper_num == "H_1002" || test_paper_num == "H_1003"
                || test_paper_num == "W_2001" || test_paper_num == "W_2002" || test_paper_num == "W_2003"
             {
@@ -143,7 +153,7 @@ fn parse_test_paper_num(path:&Path,school: &mut School,subject:&str,test_paper_n
         let entry = entry.unwrap();  
         let path = entry.path();  
         if path.is_dir() {  
-            let student_id = path.file_stem().unwrap().to_str().unwrap();
+            let student_id = path.file_name().unwrap().to_str().unwrap();
             parse_student_id_num(&path,school,subject,test_paper_num,student_id);
         } 
     }  
@@ -184,7 +194,8 @@ fn parse_student_id_num(parent_path:&Path,school: &mut School,subject:&str,test_
         let entry = entry.unwrap();  
         let path = entry.path();  
         if path.is_file() {
-            let file_name = path.file_stem().unwrap().to_str().unwrap();
+            let file_name = path.file_name().unwrap().to_str().unwrap();
+            // println!("{} 目录下的文件 {}",base_dir,file_name);
             if file_name.eq_ignore_ascii_case("side.mp4")  {
                 has_side_mp4=true;
                 if check_md5 {
@@ -254,8 +265,16 @@ fn parse_student_id_num(parent_path:&Path,school: &mut School,subject:&str,test_
         status:status,
         error_messages:messages
     };
-    school.answer_papers.borrow_mut().insert(student_paper);
+    school.check_and_insert(student_paper);
+    
+//    if let Some(mut e) =school.answer_papers.iter().find(|p| p.student_id == student_id && p.subject == subject) {
+//         let mut e=e.borrow_mut();
+//         e.error_messages.push(format!("同一个学生存在多份试卷"));
+//    }else {
+//           school.answer_papers.borrow_mut().insert(student_paper);   
+//    }
 }
+
 
 fn md5_file(path: &Path) -> String {
     let mut hasher = Md5::new();

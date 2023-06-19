@@ -10,8 +10,18 @@ export interface AnswerPaper {
 export interface SchoolData {  
     error_dirs: string[];  
     school_code: string;  
-    school_name: string; 
+    school_name: string;
+    wuli_count: number,
+    huaxue_count:number, 
     answer_papers: AnswerPaper[];
+}
+
+export interface SubjectStat{
+    subject: string;
+    all:number;
+    correct:number;
+    error:number;
+    miss:number;
 }
 
 export interface SchoolDataArray extends Array<SchoolData>{

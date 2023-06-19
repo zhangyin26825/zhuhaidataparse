@@ -36,7 +36,7 @@ mod tests {
     #[test]
     fn test_init_school() {
         // assert_eq!(parse_dir("D:\\rust"), 0);
-        init_csv();
+        super::init_csv();
     }
     
     

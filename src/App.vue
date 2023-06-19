@@ -7,6 +7,7 @@ import schoolDataComponent from './components/schoolDataComponent.vue';
 export default {
   data() {
     return {
+      activeKey:'',
       schoolDatas:[] as SchoolData[]
     }
   },
@@ -25,7 +26,9 @@ export default {
         if ((response as []).length === 0) { 
           message.error('当前选择的硬盘找不到答卷信息');
         }else{
+          console.log(response);
           this.schoolDatas = response as SchoolData[];
+          this.activeKey = this.schoolDatas[0].school_code;
         }
       })
     },
@@ -50,10 +53,10 @@ export default {
           <a-button type="primary" size="large" @click="printHtml">打印</a-button>
   </div>
   <div>  
-    <a-tabs v-model="schoolDatas">  
-      <a-tab v-for="(schoolData, index) in schoolDatas" :tab="schoolData.school_name"   :key="index" :label="schoolData.school_name">  
+    <a-tabs v-model:activeKey="activeKey">  
+      <a-tab-pane v-for="schoolData in schoolDatas" :tab="schoolData.school_name" :key="schoolData.school_code">  
          <schoolDataComponent :schoolData="schoolData"></schoolDataComponent>
-      </a-tab>  
+      </a-tab-pane>  
     </a-tabs>  
   </div>  
 </template>
