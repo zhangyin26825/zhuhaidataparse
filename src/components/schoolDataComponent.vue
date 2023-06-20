@@ -41,8 +41,8 @@ export default defineComponent({
       },
       errorAnswerPaperMessages(){
         const filteredAnswers = this.schoolData.answer_papers.filter(answer => !answer.status);  
-        const errorMessages = filteredAnswers.map(answer => answer.error_messages);  
-        return errorMessages.flat().join(',<br>');     
+        const errorMessages = filteredAnswers.flatMap(answer => answer.error_messages);
+        return errorMessages;
       },
       today(){
         var today = new Date();  
@@ -52,7 +52,6 @@ export default defineComponent({
         var day = today.getDate(); 
         return  year + "年" + month + "月" + day + "日"; 
       }
-           
     },
 
     watch:{
@@ -106,7 +105,11 @@ export default defineComponent({
       <td>XX中学</td>
     </tr> -->
     <tr>
-      <td colspan="16" style="height: 150px">不通过数量及原因：{{ errorAnswerPaperMessages }}</td>
+      <td colspan="16" style="height: 150px">不通过数量及原因：
+        <template v-for="errorMessages in errorAnswerPaperMessages">
+            {{ errorMessages }} <br>
+        </template>
+      </td>
     </tr>
     <tr>
       <td colspan="4" >提交人签名：</td>

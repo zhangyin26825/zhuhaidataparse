@@ -1,6 +1,5 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-#![warn(unused_imports)]  
 #![allow(dead_code)]
 #![warn(unused_must_use)] 
 #[warn(unknown_lints)]
