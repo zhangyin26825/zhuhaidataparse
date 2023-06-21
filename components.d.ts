@@ -10,8 +10,6 @@ declare module 'vue' {
     AButton: typeof import('ant-design-vue/es')['Button']
     ATabPane: typeof import('ant-design-vue/es')['TabPane']
     ATabs: typeof import('ant-design-vue/es')['Tabs']
-    AUpload: typeof import('ant-design-vue/es')['Upload']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     SchoolDataComponent: typeof import('./src/components/schoolDataComponent.vue')['default']
   }
 }
